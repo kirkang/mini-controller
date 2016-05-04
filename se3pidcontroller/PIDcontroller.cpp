@@ -2,16 +2,25 @@
 // 
 // 
 
+#include "stdafx.h"
+
 #include "PIDcontroller.h"
+#include <math.h> 
+#include <string>
+#include <iostream>
+using namespace std;
 
 PIDcontroller::PIDcontroller(float* Atransinvtemp, float* Arotinvtemp, int motor_n)//motorN*3, motorN*3, motorN
 {
 	Atransinv = new float[motor_n * 3];
 	Arotinv = new float[motor_n * 3];
-	memcpy(Atransinv,Atransinvtemp,motor_n * 3);
-	memcpy(Arotinv, Arotinvtemp, motor_n * 3);
-	delete[] Atransinvtemp;
-	delete[] Arotinvtemp;
+	for (int i = 0; i < motor_n * 3; i++)
+	{
+		Atransinv[i] = Atransinvtemp[i];
+		Arotinv[i] = Arotinvtemp[i];
+	}
+	//delete[] Atransinvtemp;
+	//delete[] Arotinvtemp;
 
 	Erot=new float[motor_n];
 	Etrans = new float[motor_n];
@@ -36,7 +45,7 @@ PIDcontroller::PIDcontroller(float* Atransinvtemp, float* Arotinvtemp, int motor
 
 void PIDcontroller::SetPID(float* pidrottemp, float* pidtranstemp)//motorN*3
 {
-	for (int i = 0; i < motorN; i++)
+	for (int i = 0; i < motorN;i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
@@ -62,6 +71,8 @@ void PIDcontroller::controller(float* eta_target, float* eta_n, float T, float* 
 	eta2R(eta_target, Rgoal);
 	Matrix.Invert((float*)Ris, 3);
 	Matrix.Multiply((float*)Rgoal, (float*)Ris, 3, 3, 3, (float*)Rcmd);
+	//
+	Matrix.Print(Rcmd, 3, 3, "Rcmd:");
 
 	// axis r and angle w of rotation
 	bool flag = true;
@@ -85,6 +96,10 @@ void PIDcontroller::controller(float* eta_target, float* eta_n, float T, float* 
 	}
 	else
 		Matrix.Copy(Erot1,1,motorN,Erot);
+	//
+	cout << "w:" << w<<endl;
+	Matrix.Print(r, 1, 3, "r:");
+	Matrix.Print(Erot, 1, motorN, "Erot:");
 
 	//Etrans
 	float temp[3] = { 0, 0, eta_target[2]-eta_n[2]};
@@ -112,22 +127,21 @@ void PIDcontroller::controller(float* eta_target, float* eta_n, float T, float* 
 	}
 }
 
-void PIDcontroller::printTtotal(float* Ttotal, int accuracy)
-{
-	String outputstring = "Ttotal: ";
-	for (int i = 0; i < motorN; i++)
-	{
-		int Temp = Ttotal[i] * pow(10, accuracy);
-		for (int j = accuracy; j >= 0; j--)
-		{
-			outputstring += (char)('0' + ceil(Temp / (int)pow(10, j)));
-			Temp = Temp % ((int)pow(10, j));
-		}
-		outputstring += '_';
-	}
-	Serial.println(outputstring);
-	delay(15);
-}
+//void PIDcontroller::printTtotal(float* Ttotal, int accuracy)
+//{
+//	string outputstring = "Ttotal: ";
+//	for (int i = 0; i < motorN; i++)
+//	{
+//		int Temp = Ttotal[i] * pow(10, accuracy);
+//		for (int j = accuracy; j >= 0; j--)
+//		{
+//			outputstring += (char)('0' + ceil(Temp / (int)pow(10, j)));
+//			Temp = Temp % ((int)pow(10, j));
+//		}
+//		outputstring += '_';
+//	}
+//	cout<<outputstring<<endl;
+//}
 
 PIDcontroller::~PIDcontroller()
 {

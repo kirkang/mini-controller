@@ -6,7 +6,13 @@
  *  NUMERICAL RECIPES: The Art of Scientific Computing.
  */
 
+#include "stdafx.h"
+
+#include <stdio.h>
+#include <iostream>
+#include <string>
 #include "MatrixMath.h"
+using namespace std;
 
 #define NR_END 1
 
@@ -14,17 +20,17 @@ MatrixMath Matrix;			// Pre-instantiate
 
 // Matrix Printing Routine
 // Uses tabs to separate numbers under assumption printed float width won't cause problems
-void MatrixMath::Print(float* A, int m, int n, String label){
+void MatrixMath::Print(float* A, int m, int n, string label){
 	// A = input matrix (m x n)
 	int i,j;
-	Serial.println();
-	Serial.println(label);
+	printf("\n");
+	cout<<label<<endl;
 	for (i=0; i<m; i++){
 		for (j=0;j<n;j++){
-			Serial.print(A[n*i+j]);
-			Serial.print("\t");
+			printf("%f", A[n*i+j]);
+			printf("\t");
 		}
-		Serial.println();
+		printf("\n");
 	}
 }
 
@@ -123,7 +129,11 @@ int MatrixMath::Invert(float* A, int n)
 	// n = number of rows = number of columns in A (n x n)
 	int pivrow;		// keeps track of current pivot row
 	int k,i,j;		// k: overall index along diagonal; i: row index; j: col index
-	int pivrows[n]; // keeps track of rows swaps to undo at end
+	//int pivrows[n]; // keeps track of rows swaps to undo at end
+	int* pivrows = new int[n];
+	for (int i = 0; i < n; i++)
+		pivrows[i] = 0;
+
 	float tmp;		// used for finding max value and making column swaps
 
 	for (k = 0; k < n; k++)
@@ -142,7 +152,8 @@ int MatrixMath::Invert(float* A, int n)
 		// check for singular matrix
 		if (A[pivrow*n+k] == 0.0f)
 		{
-			Serial.println("Inversion failed due to singular matrix");
+			printf("Inversion failed due to singular matrix");
+			delete[] pivrows;
 			return 0;
 		}
 
@@ -196,5 +207,6 @@ int MatrixMath::Invert(float* A, int n)
 			}
 		}
 	}
+	delete[] pivrows;
 	return 1;
 }
