@@ -9,15 +9,17 @@
 #ifndef MatrixMath_h
 #define MatrixMath_h
 
-#include <string>
-using namespace std;
-
+#if defined(ARDUINO) && ARDUINO >= 100
+#include "Arduino.h"
+#else
+#include "WProgram.h"
+#endif
 
 class MatrixMath
 {
 public:
 	//MatrixMath();
-	void Print(float* A, int m, int n, string label);
+	void Print(float* A, int m, int n, String label);
 	void Copy(float* A, int n, int m, float* B);
 	void Multiply(float* A, float* B, int m, int p, int n, float* C);
 	void Add(float* A, float* B, int m, int n, float* C);
