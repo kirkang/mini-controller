@@ -22,6 +22,24 @@ MotorControl Cmotor(EC,INC1,INC2);
 MotorControl Dmotor(ED,IND1,IND2);
 
 
+void DO(float* eta_n )
+{
+  short d[4]={-1,-1,-1,-1};
+  d[0]=(eta_n[0]>=0)?1:0;
+  d[1]=(eta_n[1]>=0)?1:0;
+  d[2]=(eta_n[2]>=0)?1:0;
+  d[3]=(eta_n[3]>=0)?1:0;
+  eta_n[0]=map(abs(eta_n[0]),0,0.2,0,255);
+  eta_n[1]=map(abs(eta_n[1]),0,0.2,0,255);
+  eta_n[2]=map(abs(eta_n[2]),0,0.2,0,255);
+  eta_n[3]=map(abs(eta_n[3]),0,0.2,0,255);
+  
+  Dmotor.Move(d[0],eta_n[0]);
+  Bmotor.Move(d[1],eta_n[1]);
+  Cmotor.Move(d[2],eta_n[2]);
+  Amotor.Move(d[3],eta_n[3]);
+}
+
 
 //int Motor_Read(){
 //  if(Serial.available())
